@@ -6,6 +6,7 @@ module Rory
       @request = env.dup
       @request[:path] = env['PATH_INFO'][1..-1] if env['PATH_INFO']
       @request[:route] = nil
+      @request[:query_string] = Rack::Utils.parse_nested_query(env['QUERY_STRING'])
       @request[:dispatcher] = self
     end
 
@@ -17,11 +18,12 @@ module Rory
       if route
         symbolized_param_names = match.names.map { |name| name.to_sym }
         route[:params] = Hash[symbolized_param_names.zip(match.captures)]
+        route[:params].merge!(@request[:query_string])
       end
       route
     end
 
-    def dispatch      
+    def dispatch
       @request[:route] = get_route(@request[:path])
 
       if @request[:route]
