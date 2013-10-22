@@ -13,10 +13,10 @@ namespace :db do
   end
 
   desc "Drop and recreate a database"
-  task :purge => :load_extensions do
+  task :purge, [:template] => :load_extensions do |task, args|
     config = RORY_APP.db_config[ENV['RORY_STAGE']]
     drop_database_from_config(config)
-    create_database_from_config(config)
+    create_database_from_config(config, args[:template])
   end
 
   namespace :schema do
