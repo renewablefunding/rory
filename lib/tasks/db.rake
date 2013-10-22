@@ -51,11 +51,23 @@ namespace :db do
     task :prepare => ['db:schema:dump', 'db:test:load']
   end
 
-  def drop_database_from_config(config)
-    RORY_APP.db << "DROP DATABASE IF EXISTS \"#{config['database']}\""
+  def master_connection(config)
+    Sequel.connect(config.merge(
+      'database' => 'postgres',
+      'schema_search_path' => 'public'
+    ))
   end
 
-  def create_database_from_config(config)
-    RORY_APP.db << "CREATE DATABASE \"#{config['database']}\""
+  def drop_database_from_config(config)
+    RORY_APP.db.disconnect
+    master_connection = master_connection(config)
+    master_connection << "DROP DATABASE IF EXISTS \"#{config['database']}\""
+  end
+
+  def create_database_from_config(config, template=nil)
+    master_connection = master_connection(config)
+    command = "CREATE DATABASE \"#{config['database']}\""
+    command += " TEMPLATE \"#{template}\"" if template
+    master_connection << command
   end
 end
