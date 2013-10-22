@@ -52,6 +52,8 @@ namespace :db do
   end
 
   def master_connection(config)
+    raise 'Dropping and creating databases with this adapter is unsupported' unless config['adapter'] == 'postgres'
+
     Sequel.connect(config.merge(
       'database' => 'postgres',
       'schema_search_path' => 'public'
