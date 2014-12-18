@@ -1,3 +1,7 @@
+= DO NOT USE THIS REPOSITORY.
+
+Please see https://github.com/screamingmuse/rory instead.
+
 = rory
 
 The Little Framework That Could, but why?
